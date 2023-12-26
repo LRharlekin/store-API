@@ -2,12 +2,14 @@
 const Product = require("../models/Product");
 
 const getAllProductsStatic = async (req, res) => {
-  const products = await Product.find({}).sort("name").select("name price");
+  const products = await Product.find({ price: { $gt: 30, $lt: 45 } })
+    .sort("price")
+    .select("name price");
   res.status(200).json({ products, numOfHits: products.length });
 };
 
 const getAllProducts = async (req, res) => {
-  const { name, featured, company, sort, fields } = req.query;
+  const { name, featured, company, sort, fields, numericFilters } = req.query;
   const queryObject = {};
 
   if (name) {
@@ -19,6 +21,17 @@ const getAllProducts = async (req, res) => {
   if (company) {
     queryObject.company = company;
   }
+  if (numericFilters) {
+    const operatorMap = {
+      ">": "$gt",
+      ">=": "$gte",
+      "=": "$eq",
+      "<": "$lt",
+      "<=": "$lte",
+    };
+    console.log(numericFilters);
+  }
+
   console.log("queryObject: ", queryObject);
 
   let result = Product.find(queryObject);
