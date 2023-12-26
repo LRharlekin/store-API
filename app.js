@@ -12,9 +12,13 @@ app.use(express.static("/public"));
 app.use(express.json());
 
 // routes
+const productsRouter = require("./routes/products");
+
 app.get("/", (req, res) => {
   res.status(200).send("Hello world");
 });
+
+app.use(router);
 
 // middlewares
 app.use(notFoundMiddleware);
