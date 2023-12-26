@@ -2,6 +2,7 @@
 const Product = require("../models/Product");
 
 const getAllProductsStatic = async (req, res) => {
+  throw new Error("testing async errors package");
   res.status(200).json({ msg: "products testing route" });
 };
 
