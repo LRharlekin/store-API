@@ -2,16 +2,12 @@
 const Product = require("../models/Product");
 
 const getAllProductsStatic = async (req, res) => {
-  const search = "ab";
-  // throw new Error("testing async errors package");
-  const products = await Product.find({
-    name: { $regex: search, $options: "i" },
-  });
+  const products = await Product.find({}).select("name price");
   res.status(200).json({ products, numOfHits: products.length });
 };
 
 const getAllProducts = async (req, res) => {
-  const { name, featured, company } = req.query;
+  const { name, featured, company, sort, fields } = req.query;
   const queryObject = {};
 
   if (name) {
@@ -24,8 +20,23 @@ const getAllProducts = async (req, res) => {
     queryObject.company = company;
   }
   console.log("queryObject: ", queryObject);
-  // req.query; // returns object with kv-pairs of query params
-  const products = await Product.find(queryObject);
+
+  let result = Product.find(queryObject);
+  if (sort) {
+    const sortList = sort.split(",").join(" ");
+    result.sort(sortList);
+    console.log("SORT OBJECT: ", sort);
+  } else {
+    // default sorting order
+    result.sort("createdAt");
+  }
+  if (fields) {
+    const fieldsList = fields.split(",").join(" ");
+    result.select(fieldsList);
+  }
+
+  const products = await result;
+
   res.status(200).json({ products, numOfHits: products.length });
 };
 
