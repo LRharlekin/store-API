@@ -2,12 +2,17 @@
 const Product = require("../models/Product");
 
 const getAllProductsStatic = async (req, res) => {
-  throw new Error("testing async errors package");
-  res.status(200).json({ msg: "products testing route" });
+  // throw new Error("testing async errors package");
+  const products = await Product.find({
+    featured: true,
+  });
+  res.status(200).json({ products, numOfHits: products.length });
 };
 
 const getAllProducts = async (req, res) => {
-  res.status(200).json({ msg: "products route" });
+  // req.query; // returns object with kv-pairs of query params
+  const products = await Product.find(req.query);
+  res.status(200).json({ products, numOfHits: products.length });
 };
 
 const getProduct = async (req, res) => {};
