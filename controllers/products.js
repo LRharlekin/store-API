@@ -2,17 +2,21 @@
 const Product = require("../models/Product");
 
 const getAllProductsStatic = async (req, res) => {
+  const search = "ab";
   // throw new Error("testing async errors package");
   const products = await Product.find({
-    featured: true,
+    name: { $regex: search, $options: "i" },
   });
   res.status(200).json({ products, numOfHits: products.length });
 };
 
 const getAllProducts = async (req, res) => {
-  const { featured, company } = req.query;
+  const { name, featured, company } = req.query;
   const queryObject = {};
 
+  if (name) {
+    queryObject.name = { $regex: name, $options: "i" };
+  }
   if (featured) {
     queryObject.featured = featured === "true" ? true : false;
   }
