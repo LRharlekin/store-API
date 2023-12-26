@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
   res.status(200).send("Hello world");
 });
 
-app.use(router);
+app.use("/api/v1/products", productsRouter);
 
 // middlewares
 app.use(notFoundMiddleware);
