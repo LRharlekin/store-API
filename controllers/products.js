@@ -10,8 +10,15 @@ const getAllProductsStatic = async (req, res) => {
 };
 
 const getAllProducts = async (req, res) => {
+  const { featured } = req.query;
+  const queryObject = {};
+
+  if (featured) {
+    queryObject.featured = featured === "true" ? true : false;
+  }
+  console.log(queryObject);
   // req.query; // returns object with kv-pairs of query params
-  const products = await Product.find(req.query);
+  const products = await Product.find(queryObject);
   res.status(200).json({ products, numOfHits: products.length });
 };
 
