@@ -29,7 +29,23 @@ const getAllProducts = async (req, res) => {
       "<": "$lt",
       "<=": "$lte",
     };
-    console.log(numericFilters);
+    const regEx = /\b(>|>=|=|<=|<)\b/g;
+
+    let filters = numericFilters.replace(
+      regEx,
+      (match) => `-${operatorMap[match]}-`
+    );
+
+    // hardcode & select properties that use numeric values / numeric filtering
+    const options = ["price", "rating"];
+    // only add new property to queryObject if the extracted field is a field from the options array
+    filters = filters.split(",").forEach((setting) => {
+      const [field, operator, value] = setting.split("-");
+      if (options.includes(field)) {
+        // e.g.: queryObject:  { price: { '$gt': 40 }, rating: { '$gte': 4 } }
+        queryObject[field] = { [operator]: Number(value) };
+      }
+    });
   }
 
   console.log("queryObject: ", queryObject);
@@ -38,7 +54,6 @@ const getAllProducts = async (req, res) => {
   if (sort) {
     const sortList = sort.split(",").join(" ");
     result.sort(sortList);
-    console.log("SORT OBJECT: ", sort);
   } else {
     // default sorting order
     result.sort("createdAt");
